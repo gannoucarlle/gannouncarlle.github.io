@@ -10,6 +10,7 @@
         <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
         <link rel="stylesheet" href="css/leaflet-search.css">
         <link rel="stylesheet" href="css/leaflet-control-geocoder.Geocoder.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
         <style>
         html, body, #map {
             width: 100%;
@@ -33,41 +34,30 @@
         <script src="js/labelgun.min.js"></script>
         <script src="js/labels.js"></script>
         <script src="js/leaflet-control-geocoder.Geocoder.js"></script>
-        <script src="js/proj4.js"></script>
-        <script src="js/proj4leaflet.js"></script>
+        <script src="js/leaflet-measure.js"></script>
         <script src="js/leaflet-search.js"></script>
-        <script src="data/Arrondissementsdouala123456_1.js"></script>
+        <script src="data/Arrondissements_1.js"></script>
         <script src="data/Restaurants_2.js"></script>
         <script>
-        var highlightLayer;
-        function highlightFeature(e) {
-            highlightLayer = e.target;
-
-            if (e.target.feature.geometry.type === 'LineString') {
-              highlightLayer.setStyle({
-                color: '#ffff00',
-              });
-            } else {
-              highlightLayer.setStyle({
-                fillColor: '#ffff00',
-                fillOpacity: 1
-              });
-            }
-            highlightLayer.openPopup();
-        }
-        var crs = new L.Proj.CRS('EPSG:32632', '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs', {
-            resolutions: [2800, 1400, 700, 350, 175, 84, 42, 21, 11.2, 5.6, 2.8, 1.4, 0.7, 0.35, 0.14, 0.07],
-        });
         var map = L.map('map', {
-            crs: crs,
-            continuousWorld: false,
-            worldCopyJump: false, 
             zoomControl:true, maxZoom:28, minZoom:1
-        }).fitBounds([[3.777147846229043,9.277492445976366],[4.283202974426781,10.026845553818807]]);
+        }).fitBounds([[4.04808584425806,9.692935557532671],[4.052039787817885,9.698790180898968]]);
         var hash = new L.Hash(map);
         map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
         var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
         L.control.locate({locateOptions: {maxZoom: 19}}).addTo(map);
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .className += ' fas fa-ruler';
         var bounds_group = new L.featureGroup([]);
         function setBounds() {
         }
@@ -75,7 +65,7 @@
         map.getPane('pane_OSMStandard_0').style.zIndex = 400;
         var layer_OSMStandard_0 = L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             pane: 'pane_OSMStandard_0',
-            opacity: 0.506,
+            opacity: 0.7090000000000001,
             attribution: '<a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors, CC-BY-SA</a>',
             minZoom: 1,
             maxZoom: 28,
@@ -84,22 +74,7 @@
         });
         layer_OSMStandard_0;
         map.addLayer(layer_OSMStandard_0);
-        function pop_Arrondissementsdouala123456_1(feature, layer) {
-            layer.on({
-                mouseout: function(e) {
-                    for (i in e.target._eventParents) {
-                        e.target._eventParents[i].resetStyle(e.target);
-                    }
-                    if (typeof layer.closePopup == 'function') {
-                        layer.closePopup();
-                    } else {
-                        layer.eachLayer(function(feature){
-                            feature.closePopup()
-                        });
-                    }
-                },
-                mouseover: highlightFeature,
-            });
+        function pop_Arrondissements_1(feature, layer) {
             var popupContent = '<table>\
                     <tr>\
                         <td colspan="2"><strong>Arrondissement</strong><br />' + (feature.properties['Arrondisse'] !== null ? autolinker.link(feature.properties['Arrondisse'].toLocaleString()) : '') + '</td>\
@@ -108,130 +83,34 @@
             layer.bindPopup(popupContent, {maxHeight: 400});
         }
 
-        function style_Arrondissementsdouala123456_1_0(feature) {
-            switch(String(feature.properties['Arrondisse'])) {
-                case 'Douala 1':
-                    return {
-                pane: 'pane_Arrondissementsdouala123456_1',
+        function style_Arrondissements_1_0() {
+            return {
+                pane: 'pane_Arrondissements_1',
                 opacity: 1,
                 color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
                 lineCap: 'butt',
                 lineJoin: 'miter',
-                weight: 1.0, 
-                fill: true,
-                fillOpacity: 1,
-                fillColor: 'rgba(206,112,167,1.0)',
+                weight: 3.0, 
+                fillOpacity: 0,
                 interactive: true,
-            }
-                    break;
-                case 'Douala 2':
-                    return {
-                pane: 'pane_Arrondissementsdouala123456_1',
-                opacity: 1,
-                color: 'rgba(35,35,35,1.0)',
-                dashArray: '',
-                lineCap: 'butt',
-                lineJoin: 'miter',
-                weight: 1.0, 
-                fill: true,
-                fillOpacity: 1,
-                fillColor: 'rgba(36,222,29,1.0)',
-                interactive: true,
-            }
-                    break;
-                case 'Douala 3':
-                    return {
-                pane: 'pane_Arrondissementsdouala123456_1',
-                opacity: 1,
-                color: 'rgba(35,35,35,1.0)',
-                dashArray: '',
-                lineCap: 'butt',
-                lineJoin: 'miter',
-                weight: 1.0, 
-                fill: true,
-                fillOpacity: 1,
-                fillColor: 'rgba(175,105,232,1.0)',
-                interactive: true,
-            }
-                    break;
-                case 'Douala 4':
-                    return {
-                pane: 'pane_Arrondissementsdouala123456_1',
-                opacity: 1,
-                color: 'rgba(35,35,35,1.0)',
-                dashArray: '',
-                lineCap: 'butt',
-                lineJoin: 'miter',
-                weight: 1.0, 
-                fill: true,
-                fillOpacity: 1,
-                fillColor: 'rgba(114,142,206,1.0)',
-                interactive: true,
-            }
-                    break;
-                case 'Douala 5':
-                    return {
-                pane: 'pane_Arrondissementsdouala123456_1',
-                opacity: 1,
-                color: 'rgba(35,35,35,1.0)',
-                dashArray: '',
-                lineCap: 'butt',
-                lineJoin: 'miter',
-                weight: 1.0, 
-                fill: true,
-                fillOpacity: 1,
-                fillColor: 'rgba(201,225,20,1.0)',
-                interactive: true,
-            }
-                    break;
-                case 'Douala 6':
-                    return {
-                pane: 'pane_Arrondissementsdouala123456_1',
-                opacity: 1,
-                color: 'rgba(35,35,35,1.0)',
-                dashArray: '',
-                lineCap: 'butt',
-                lineJoin: 'miter',
-                weight: 1.0, 
-                fill: true,
-                fillOpacity: 1,
-                fillColor: 'rgba(112,210,196,1.0)',
-                interactive: true,
-            }
-                    break;
             }
         }
-        map.createPane('pane_Arrondissementsdouala123456_1');
-        map.getPane('pane_Arrondissementsdouala123456_1').style.zIndex = 401;
-        map.getPane('pane_Arrondissementsdouala123456_1').style['mix-blend-mode'] = 'normal';
-        var layer_Arrondissementsdouala123456_1 = new L.geoJson(json_Arrondissementsdouala123456_1, {
+        map.createPane('pane_Arrondissements_1');
+        map.getPane('pane_Arrondissements_1').style.zIndex = 401;
+        map.getPane('pane_Arrondissements_1').style['mix-blend-mode'] = 'normal';
+        var layer_Arrondissements_1 = new L.geoJson(json_Arrondissements_1, {
             attribution: '',
             interactive: true,
-            dataVar: 'json_Arrondissementsdouala123456_1',
-            layerName: 'layer_Arrondissementsdouala123456_1',
-            pane: 'pane_Arrondissementsdouala123456_1',
-            onEachFeature: pop_Arrondissementsdouala123456_1,
-            style: style_Arrondissementsdouala123456_1_0,
+            dataVar: 'json_Arrondissements_1',
+            layerName: 'layer_Arrondissements_1',
+            pane: 'pane_Arrondissements_1',
+            onEachFeature: pop_Arrondissements_1,
+            style: style_Arrondissements_1_0,
         });
-        bounds_group.addLayer(layer_Arrondissementsdouala123456_1);
-        map.addLayer(layer_Arrondissementsdouala123456_1);
+        bounds_group.addLayer(layer_Arrondissements_1);
+        map.addLayer(layer_Arrondissements_1);
         function pop_Restaurants_2(feature, layer) {
-            layer.on({
-                mouseout: function(e) {
-                    for (i in e.target._eventParents) {
-                        e.target._eventParents[i].resetStyle(e.target);
-                    }
-                    if (typeof layer.closePopup == 'function') {
-                        layer.closePopup();
-                    } else {
-                        layer.eachLayer(function(feature){
-                            feature.closePopup()
-                        });
-                    }
-                },
-                mouseover: highlightFeature,
-            });
             var popupContent = '<table>\
                     <tr>\
                         <td colspan="2"><strong>Nom</strong><br />' + (feature.properties['name_'] !== null ? autolinker.link(feature.properties['name_'].toLocaleString()) : '') + '</td>\
@@ -301,15 +180,15 @@
         document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
         .title += 'Search for a place';
         var baseMaps = {};
-        L.control.layers(baseMaps,{'<img src="legend/Restaurants_2.png" /> Restaurants': layer_Restaurants_2,'Arrondissements douala 1,2,3,4,5,6<br /><table><tr><td style="text-align: center;"><img src="legend/Arrondissementsdouala123456_1_Douala10.png" /></td><td>Douala 1</td></tr><tr><td style="text-align: center;"><img src="legend/Arrondissementsdouala123456_1_Douala21.png" /></td><td>Douala 2</td></tr><tr><td style="text-align: center;"><img src="legend/Arrondissementsdouala123456_1_Douala32.png" /></td><td>Douala 3</td></tr><tr><td style="text-align: center;"><img src="legend/Arrondissementsdouala123456_1_Douala43.png" /></td><td>Douala 4</td></tr><tr><td style="text-align: center;"><img src="legend/Arrondissementsdouala123456_1_Douala54.png" /></td><td>Douala 5</td></tr><tr><td style="text-align: center;"><img src="legend/Arrondissementsdouala123456_1_Douala65.png" /></td><td>Douala 6</td></tr></table>': layer_Arrondissementsdouala123456_1,"OSM Standard": layer_OSMStandard_0,}).addTo(map);
+        L.control.layers(baseMaps,{'<img src="legend/Restaurants_2.png" /> Restaurants': layer_Restaurants_2,'<img src="legend/Arrondissements_1.png" /> Arrondissements': layer_Arrondissements_1,"OSM Standard": layer_OSMStandard_0,}).addTo(map);
         setBounds();
         var i = 0;
-        layer_Arrondissementsdouala123456_1.eachLayer(function(layer) {
+        layer_Arrondissements_1.eachLayer(function(layer) {
             var context = {
                 feature: layer.feature,
                 variables: {}
             };
-            layer.bindTooltip((layer.feature.properties['Arrondisse'] !== null?String('<div style="color: #000000; font-size: 9pt; font-family: \'Tahoma\', sans-serif;">' + layer.feature.properties['Arrondisse']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_Arrondissementsdouala123456_1'});
+            layer.bindTooltip((layer.feature.properties['Arrondisse'] !== null?String('<div style="color: #000000; font-size: 9pt; font-family: \'Tahoma\', sans-serif;">' + layer.feature.properties['Arrondisse']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_Arrondissements_1'});
             labels.push(layer);
             totalMarkers += 1;
               layer.added = true;
@@ -336,15 +215,15 @@
             propertyName: 'name_'}));
         document.getElementsByClassName('search-button')[0].className +=
          ' fa fa-binoculars';
-        resetLabels([layer_Arrondissementsdouala123456_1,layer_Restaurants_2]);
+        resetLabels([layer_Arrondissements_1,layer_Restaurants_2]);
         map.on("zoomend", function(){
-            resetLabels([layer_Arrondissementsdouala123456_1,layer_Restaurants_2]);
+            resetLabels([layer_Arrondissements_1,layer_Restaurants_2]);
         });
         map.on("layeradd", function(){
-            resetLabels([layer_Arrondissementsdouala123456_1,layer_Restaurants_2]);
+            resetLabels([layer_Arrondissements_1,layer_Restaurants_2]);
         });
         map.on("layerremove", function(){
-            resetLabels([layer_Arrondissementsdouala123456_1,layer_Restaurants_2]);
+            resetLabels([layer_Arrondissements_1,layer_Restaurants_2]);
         });
         </script>
     </body>
